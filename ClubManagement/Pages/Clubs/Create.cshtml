@@ -1,0 +1,43 @@
+﻿@page
+@model ClubManagement.Pages.Clubs.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Club</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Club.ClubName" class="control-label"></label>
+                <input asp-for="Club.ClubName" class="form-control" />
+                <span asp-validation-for="Club.ClubName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Club.Description" class="control-label"></label>
+                <input asp-for="Club.Description" class="form-control" />
+                <span asp-validation-for="Club.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Club.LeaderId" class="control-label"></label>
+                <select asp-for="Club.LeaderId" class ="form-control" asp-items="ViewBag.LeaderId"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
