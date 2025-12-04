@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using ClubManagement.Service.DTOs.ResponseDTOs;
 using ClubManagement.Service.ServiceProviders.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ClubManagement.Pages.Clubs
 {
+    [Authorize(Roles = "Admin")]
     public class IndexModel : PageModel
     {
         private readonly IServiceProviders _serviceProviders;
