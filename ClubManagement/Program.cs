@@ -10,6 +10,7 @@ using ClubManagement.Service.ServiceProviders;
 using ClubManagement.Service.ServiceProviders.Interface;
 using ClubManagement.Service.Services;
 using ClubManagement.Service.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Auth/AccessDenied";
+
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+
+        options.SlidingExpiration = true;
+    });
 
 builder.Services.AddDbContext<ClubManagementContext>(options =>
     options.UseSqlServer(connectionString));
@@ -53,6 +65,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
