@@ -1,0 +1,254 @@
+@page
+@model ClubManagement.Pages.Activities.DetailsModel
+@{
+    ViewData["Title"] = "Activity Details";
+    var activity = Model.Activity;
+    
+    var status = "";
+    var badgeClass = "";
+    var now = DateTime.Now;
+    
+    if (now < activity.StartDate)
+    {
+        status = "Upcoming";
+        badgeClass = "bg-info";
+    }
+    else if (activity.EndDate.HasValue && now >= activity.StartDate && now <= activity.EndDate.Value)
+    {
+        status = "Ongoing";
+        badgeClass = "bg-success";
+    }
+    else
+    {
+        status = "Completed";
+        badgeClass = "bg-secondary";
+    }
+}
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
+                    <li class="breadcrumb-item"><a asp-page="./Index">Activities</a></li>
+                    <li class="breadcrumb-item active">@activity.ActivityName</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="bi bi-calendar-event me-2"></i>@activity.ActivityName</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <span class="badge @badgeClass fs-6">@status</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5><i class="bi bi-info-circle me-2"></i>Description</h5>
+                        <p class="text-muted">@activity.Description</p>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-building me-2"></i>Club</h6>
+                            <p>@activity.Club.ClubName</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-geo-alt me-2"></i>Location</h6>
+                            <p>@activity.Location</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-calendar-check me-2"></i>Start Date</h6>
+                            <p>@activity.StartDate.ToString("dddd, dd MMMM yyyy HH:mm")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-calendar-x me-2"></i>End Date</h6>
+                            <p>@(activity.EndDate?.ToString("dddd, dd MMMM yyyy HH:mm") ?? "N/A")</p>
+                        </div>
+                    </div>
+
+                    <!-- Participants Section -->
+                    <div class="mb-3">
+                        <h5><i class="bi bi-people me-2"></i>Participants (@activity.ActivityParticipants.Count)</h5>
+                    </div>
+
+                    @if (activity.ActivityParticipants.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Check-in Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var count = 1;
+                                    }
+                                    @foreach (var participant in activity.ActivityParticipants)
+                                    {
+                                        <tr>
+                                            <td>@count</td>
+                                            <td>@participant.User.FullName</td>
+                                            <td>@participant.User.Email</td>
+                                            <td>@participant.User.Phone</td>
+                                            <td>
+                                                @if (participant.CheckInTime.HasValue)
+                                                {
+                                                    @participant.CheckInTime.Value.ToString("dd/MM/yyyy HH:mm")
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Not checked in</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (participant.Status == "Registered")
+                                                {
+                                                    <span class="badge bg-primary">@participant.Status</span>
+                                                }
+                                                else if (participant.Status == "Attended")
+                                                {
+                                                    <span class="badge bg-success">@participant.Status</span>
+                                                }
+                                                else if (participant.Status == "Absent")
+                                                {
+                                                    <span class="badge bg-danger">@participant.Status</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@participant.Status</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                        count++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>No participants registered yet.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Statistics Card -->
+            <div class="card shadow mb-3">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Total Participants:</span>
+                            <span class="badge bg-primary rounded-pill">@activity.ActivityParticipants.Count</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Attended:</span>
+                            <span class="badge bg-success rounded-pill">
+                                @activity.ActivityParticipants.Count(p => p.Status == "Attended")
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Registered:</span>
+                            <span class="badge bg-info rounded-pill">
+                                @activity.ActivityParticipants.Count(p => p.Status == "Registered")
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Absent:</span>
+                            <span class="badge bg-danger rounded-pill">
+                                @activity.ActivityParticipants.Count(p => p.Status == "Absent")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Duration Card -->
+            <div class="card shadow mb-3">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-clock me-2"></i>Duration</h5>
+                </div>
+                <div class="card-body">
+                    @if (activity.EndDate.HasValue)
+                    {
+                        var duration = activity.EndDate.Value - activity.StartDate;
+                        var days = duration.Days;
+                        var hours = duration.Hours;
+                        var minutes = duration.Minutes;
+                        <p class="mb-0">
+                            @if (days > 0)
+                            {
+                                <span>@days day(s) </span>
+                            }
+                            @if (hours > 0)
+                            {
+                                <span>@hours hour(s) </span>
+                            }
+                            @if (minutes > 0)
+                            {
+                                <span>@minutes minute(s)</span>
+                            }
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="mb-0">N/A</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Actions Card -->
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-page="./Edit" asp-route-id="@activity.ActivityId" class="btn btn-warning">
+                                <i class="bi bi-pencil me-2"></i>Edit Activity
+                            </a>
+                            <a asp-page="./Delete" asp-route-id="@activity.ActivityId" class="btn btn-danger">
+                                <i class="bi bi-trash me-2"></i>Delete Activity
+                            </a>
+                        }
+                        <a asp-page="./Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

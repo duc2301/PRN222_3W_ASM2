@@ -1,0 +1,153 @@
+@page
+@model ClubManagement.Pages.Activities.IndexModel
+@{
+    ViewData["Title"] = "Activities Management";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2><i class="bi bi-calendar-event me-2"></i>Activities Management</h2>
+        </div>
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="col text-end">
+                <a asp-page="./Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i>Create New Activity
+                </a>
+            </div>
+        }
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Search</label>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name or location...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Club</label>
+                    <select id="clubFilter" class="form-select">
+                        <option value="">All Clubs</option>
+                        @foreach (var club in Model.Clubs)
+                        {
+                            <option value="@club.ClubId">@club.ClubName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="ongoing">Ongoing</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button id="clearFilters" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-x-circle me-1"></i>Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activities Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="activitiesContainer">
+        @foreach (var activity in Model.Activities)
+        {
+            var status = "";
+            var badgeClass = "";
+            var now = DateTime.Now;
+            
+            if (now < activity.StartDate)
+            {
+                status = "Upcoming";
+                badgeClass = "bg-info";
+            }
+            else if (activity.EndDate.HasValue && now >= activity.StartDate && now <= activity.EndDate.Value)
+            {
+                status = "Ongoing";
+                badgeClass = "bg-success";
+            }
+            else
+            {
+                status = "Completed";
+                badgeClass = "bg-secondary";
+            }
+
+            <div class="col activity-card" 
+                 data-activity-id="@activity.ActivityId"
+                 data-club-id="@activity.Club.ClubId"
+                 data-status="@status.ToLower()">
+                <div class="card h-100 shadow-sm hover-lift">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">@activity.ActivityName</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <span class="badge @badgeClass">@status</span>
+                        </div>
+                        <p class="card-text text-muted small mb-3">
+                            @(activity.Description?.Length > 100 
+                                ? activity.Description.Substring(0, 100) + "..." 
+                                : activity.Description)
+                        </p>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2">
+                                <i class="bi bi-building me-2 text-primary"></i>
+                                <strong>Club:</strong> @activity.Club.ClubName
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-geo-alt me-2 text-primary"></i>
+                                <strong>Location:</strong> @activity.Location
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-calendar-check me-2 text-primary"></i>
+                                <strong>Start:</strong> @activity.StartDate.ToString("dd/MM/yyyy HH:mm")
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-calendar-x me-2 text-primary"></i>
+                                <strong>End:</strong> @(activity.EndDate?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
+                            </li>
+                            <li>
+                                <i class="bi bi-people me-2 text-primary"></i>
+                                <strong>Participants:</strong> @activity.ActivityParticipants.Count
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between">
+                            <a asp-page="./Details" asp-route-id="@activity.ActivityId" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye me-1"></i>Details
+                            </a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <div>
+                                    <a asp-page="./Edit" asp-route-id="@activity.ActivityId" class="btn btn-sm btn-outline-warning me-1">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-page="./Delete" asp-route-id="@activity.ActivityId" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- No Results Message -->
+    <div id="noResults" class="alert alert-info text-center d-none" role="alert">
+        <i class="bi bi-info-circle me-2"></i>No activities found matching your criteria.
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/activities.js"></script>
+}

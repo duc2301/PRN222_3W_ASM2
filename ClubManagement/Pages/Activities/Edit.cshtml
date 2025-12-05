@@ -1,0 +1,114 @@
+@page
+@model ClubManagement.Pages.Activities.EditModel
+@{
+    ViewData["Title"] = "Edit Activity";
+}
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
+                    <li class="breadcrumb-item"><a asp-page="./Index">Activities</a></li>
+                    <li class="breadcrumb-item active">Edit</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="mb-0"><i class="bi bi-pencil me-2"></i>Edit Activity</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="editActivityForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <input type="hidden" asp-for="ActivityUpdate.ActivityId" />
+
+                        <div class="mb-3">
+                            <label asp-for="ActivityUpdate.ActivityName" class="form-label">
+                                <i class="bi bi-type me-1"></i>Activity Name
+                            </label>
+                            <input asp-for="ActivityUpdate.ActivityName" class="form-control" placeholder="Enter activity name" />
+                            <span asp-validation-for="ActivityUpdate.ActivityName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ActivityUpdate.ClubId" class="form-label">
+                                <i class="bi bi-building me-1"></i>Club
+                            </label>
+                            <select asp-for="ActivityUpdate.ClubId" class="form-select" asp-items="Model.ClubSelectList">
+                                <option value="">-- Select Club --</option>
+                            </select>
+                            <span asp-validation-for="ActivityUpdate.ClubId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ActivityUpdate.Description" class="form-label">
+                                <i class="bi bi-card-text me-1"></i>Description
+                            </label>
+                            <textarea asp-for="ActivityUpdate.Description" class="form-control" rows="4" 
+                                      placeholder="Enter activity description"></textarea>
+                            <span asp-validation-for="ActivityUpdate.Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ActivityUpdate.Location" class="form-label">
+                                <i class="bi bi-geo-alt me-1"></i>Location
+                            </label>
+                            <input asp-for="ActivityUpdate.Location" class="form-control" placeholder="Enter location" />
+                            <span asp-validation-for="ActivityUpdate.Location" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ActivityUpdate.StartDate" class="form-label">
+                                    <i class="bi bi-calendar-check me-1"></i>Start Date
+                                </label>
+                                <input asp-for="ActivityUpdate.StartDate" class="form-control" type="datetime-local" />
+                                <span asp-validation-for="ActivityUpdate.StartDate" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ActivityUpdate.EndDate" class="form-label">
+                                    <i class="bi bi-calendar-x me-1"></i>End Date
+                                </label>
+                                <input asp-for="ActivityUpdate.EndDate" class="form-control" type="datetime-local" />
+                                <span asp-validation-for="ActivityUpdate.EndDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-3">
+                            <a asp-page="./Index" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-check-circle me-1"></i>Update Activity
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Date validation
+        document.getElementById('editActivityForm').addEventListener('submit', function(e) {
+            const startDate = new Date(document.getElementById('ActivityUpdate_StartDate').value);
+            const endDate = new Date(document.getElementById('ActivityUpdate_EndDate').value);
+            
+            if (endDate <= startDate) {
+                e.preventDefault();
+                alert('End date must be after start date!');
+            }
+        });
+    </script>
+}
