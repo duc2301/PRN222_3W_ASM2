@@ -23,5 +23,6 @@ namespace ClubManagement.Service.ServiceProviders
         public IClubService ClubService => new ClubService(_unitOfWork, _mapper);
 
         public IUserService UserService => new UserService(_unitOfWork, _mapper);
+        public IMembershipService MembershipService => new MembershipService(_unitOfWork);
     }
 }

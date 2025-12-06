@@ -1,0 +1,513 @@
+﻿@page
+@model ClubManagement.Pages.ClubManager.MembersModel
+@{
+    ViewData["Title"] = "Thành viên câu lạc bộ";
+
+    var clubName = Model.Club?.ClubName ?? "Club";
+    var clubDescription = Model.Club?.Description ??
+                          "Danh sách thành viên trong câu lạc bộ.";
+}
+
+<style>
+    .club-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 24px;
+    }
+
+    .club-header-left small {
+        color: #6b7280;
+    }
+
+    .club-header-actions button {
+        border-radius: 8px;
+        font-size: 14px;
+        padding: 8px 14px;
+    }
+
+    .club-header-actions .btn-config {
+        background: #020617;
+        color: #ffffff;
+        border: none;
+    }
+
+    .club-tabs {
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 16px;
+    }
+
+        .club-tabs .nav-link {
+            font-size: 14px;
+            color: #6b7280;
+            padding: 10px 0;
+            margin-right: 20px;
+            border: none;
+            border-bottom: 2px solid transparent;
+            background: transparent;
+            border-radius: 0;
+        }
+
+            .club-tabs .nav-link.active {
+                color: #111827;
+                font-weight: 600;
+                border-bottom-color: #111827;
+                background: transparent;
+            }
+
+    .member-filters {
+        background: #f9fafb;
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin-bottom: 18px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+    }
+
+        .member-filters .form-control,
+        .member-filters .form-select {
+            font-size: 14px;
+            border-radius: 999px;
+            padding: 8px 14px;
+        }
+
+        .member-filters .form-select {
+            padding-right: 32px;
+            background-position: right 12px center;
+        }
+
+    .btn-filter {
+        border-radius: 999px;
+        padding: 8px 18px;
+        font-size: 14px;
+    }
+
+    .btn-add-member {
+        border-radius: 10px;
+        font-size: 14px;
+        padding: 10px 18px;
+    }
+
+    .member-table {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+    }
+
+        .member-table table {
+            margin-bottom: 0;
+        }
+
+        .member-table thead {
+            background: #f9fafb;
+        }
+
+        .member-table th {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #9ca3af;
+            border-bottom: none !important;
+        }
+
+        .member-table td {
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+    .member-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 999px;
+        background: #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+        margin-right: 10px;
+    }
+
+    .member-name {
+        font-weight: 500;
+        color: #111827;
+    }
+
+    .member-email {
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .badge-status {
+        border-radius: 999px;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .badge-status.active {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-status.inactive {
+            background: #e5e7eb;
+            color: #4b5563;
+        }
+
+        .badge-status.banned {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+    .btn-edit-member {
+        border-radius: 999px;
+        font-size: 13px;
+        padding: 4px 10px;
+    }
+</style>
+
+<div class="club-header">
+    <div class="club-header-left">
+        <a asp-page="/ClubManager/Index"
+           class="text-muted mb-2 d-inline-flex align-items-center"
+           style="font-size: 13px; text-decoration: none;">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách CLB
+        </a>
+
+        <h2 class="h4 fw-semibold mb-1">
+            @clubName
+        </h2>
+        <small>@clubDescription</small>
+    </div>
+
+    <div class="club-header-actions d-flex gap-2">
+        <button type="button" class="btn btn-config">
+            <i class="bi bi-gear-fill me-1"></i> Cấu hình
+        </button>
+    </div>
+</div>
+
+<ul class="nav club-tabs" id="clubTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <a class="nav-link"
+           id="tab-dashboard"
+           asp-page="/ClubManager/Details"
+           asp-route-id="@Model.ClubId">
+            Dashboard
+        </a>
+    </li>
+
+    <li class="nav-item" role="presentation">
+        <a class="nav-link active"
+           id="tab-members"
+           aria-current="page">
+            Thành viên
+        </a>
+    </li>
+
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" type="button" disabled>
+            Đơn gia nhập
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" type="button" disabled>
+            Hoạt động
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" type="button" disabled>
+            Quỹ &amp; Phí
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" type="button" disabled>
+            Báo cáo
+        </button>
+    </li>
+</ul>
+
+<!-- BỘ LỌC -->
+<form method="get" class="member-filters">
+    <input type="hidden" name="ClubId" value="@Model.ClubId" />
+
+    <div class="flex-grow-1">
+        <input class="form-control"
+               type="text"
+               name="Search"
+               value="@Model.Search"
+               placeholder="Tìm tên, email..." />
+    </div>
+
+    <div>
+        <select name="RoleFilter" class="form-select">
+            <option value="">Tất cả vai trò</option>
+            <option value="Leader"
+                    selected="@(Model.RoleFilter == "Leader")">
+                Leader
+            </option>
+            <option value="Treasurer"
+                    selected="@(Model.RoleFilter == "Treasurer")">
+                Treasurer
+            </option>
+            <option value="Member"
+                    selected="@(Model.RoleFilter == "Member")">
+                Member
+            </option>
+        </select>
+    </div>
+
+    <div>
+        <select name="StatusFilter" class="form-select">
+            <option value="">Tất cả trạng thái</option>
+            <option value="Active"
+                    selected="@(Model.StatusFilter == "Active")">
+                Active
+            </option>
+            <option value="Inactive"
+                    selected="@(Model.StatusFilter == "Inactive")">
+                Inactive
+            </option>
+            <option value="Banned"
+                    selected="@(Model.StatusFilter == "Banned")">
+                Banned
+            </option>
+        </select>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary btn-filter">Lọc</button>
+        <a asp-page="./Members" asp-route-ClubId="@Model.ClubId"
+           class="btn btn-outline-secondary btn-filter">
+            Reset
+        </a>
+    </div>
+
+    @* <div class="ms-auto">
+        <button type="button" class="btn btn-dark btn-add-member">
+            <i class="bi bi-plus-lg me-1"></i> Thêm thành viên
+        </button>
+    </div> *@
+</form>
+
+<!-- BẢNG THÀNH VIÊN -->
+<div class="member-table">
+    <table class="table mb-0">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>THÀNH VIÊN</th>
+                <th>KHOA</th>
+                <th>VAI TRÒ</th>
+                <th>TRẠNG THÁI</th>
+                <th>NGÀY THAM GIA</th>
+                <th class="text-end">ACTIONS</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Members.Items.Any())
+            {
+                var startNo = (Model.Members.PageIndex - 1) * Model.Members.PageSize;
+                var idx = 0;
+                foreach (var m in Model.Members.Items)
+                {
+                    var stt = startNo + (++idx);
+                    var initial = !string.IsNullOrWhiteSpace(m.FullName)
+                    ? m.FullName.Trim()[0].ToString().ToUpper()
+                    : "U";
+
+                    var statusClass =
+                    m.Status == "Active" ? "active" :
+                    m.Status == "Banned" ? "banned" :
+                    "inactive";
+
+                    <tr>
+                        <td>@stt</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="member-avatar">@initial</div>
+                                <div>
+                                    <div class="member-name">@m.FullName</div>
+                                    <div class="member-email">@m.Email</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>@m.Department</td>
+                        <td>@m.Role</td>
+                        <td>
+                            <span class="badge-status @statusClass">
+                                @m.Status
+                            </span>
+                        </td>
+                        <td>@(m.JoinedAt?.ToString("yyyy-MM-dd") ?? "")</td>
+                        <td class="text-end">
+                            <button type="button"
+                                    class="btn btn-light text-primary btn-edit-member"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editMemberModal"
+                                    data-member-id="@m.MembershipId"
+                                    data-member-name="@m.FullName"
+                                    data-member-email="@m.Email"
+                                    data-member-role="@m.Role"
+                                    data-member-status="@m.Status">
+                                Sửa
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">
+                        Không tìm thấy thành viên nào.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- PHÂN TRANG -->
+@if (Model.Members.TotalPages > 1)
+{
+    <nav class="mt-3">
+        <ul class="pagination pagination-sm">
+            <li class="page-item @(Model.Members.PageIndex == 1 ? "disabled" : "")">
+                <a class="page-link"
+                   asp-page="./Members"
+                   asp-route-ClubId="@Model.ClubId"
+                   asp-route-PageIndex="@(Model.Members.PageIndex - 1)"
+                   asp-route-Search="@Model.Search"
+                   asp-route-RoleFilter="@Model.RoleFilter"
+                   asp-route-StatusFilter="@Model.StatusFilter">
+                    Previous
+                </a>
+            </li>
+
+            @for (var p = 1; p <= Model.Members.TotalPages; p++)
+            {
+                <li class="page-item @(p == Model.Members.PageIndex ? "active" : "")">
+                    <a class="page-link"
+                       asp-page="./Members"
+                       asp-route-ClubId="@Model.ClubId"
+                       asp-route-PageIndex="@p"
+                       asp-route-Search="@Model.Search"
+                       asp-route-RoleFilter="@Model.RoleFilter"
+                       asp-route-StatusFilter="@Model.StatusFilter">
+                        @p
+                    </a>
+                </li>
+            }
+
+            <li class="page-item @(Model.Members.PageIndex == Model.Members.TotalPages ? "disabled" : "")">
+                <a class="page-link"
+                   asp-page="./Members"
+                   asp-route-ClubId="@Model.ClubId"
+                   asp-route-PageIndex="@(Model.Members.PageIndex + 1)"
+                   asp-route-Search="@Model.Search"
+                   asp-route-RoleFilter="@Model.RoleFilter"
+                   asp-route-StatusFilter="@Model.StatusFilter">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </nav>
+}
+
+<!-- MODAL CHỈNH SỬA THÀNH VIÊN -->
+<div class="modal fade" id="editMemberModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0" style="border-radius: 16px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-semibold">Chỉnh sửa thành viên</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="post" asp-page-handler="UpdateMember">
+                @Html.AntiForgeryToken()
+                <div class="modal-body pt-2">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                    <!-- Hidden: giữ state -->
+                    <input type="hidden" asp-for="ClubId" />
+                    <input type="hidden" asp-for="Search" />
+                    <input type="hidden" asp-for="RoleFilter" />
+                    <input type="hidden" asp-for="StatusFilter" />
+                    <input type="hidden" asp-for="PageIndex" />
+                    <input type="hidden" asp-for="EditMember.MembershipId" />
+
+                    <!-- Thông tin thành viên -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Thành viên</label>
+                        <input type="text"
+                               id="editMemberDisplayName"
+                               class="form-control"
+                               readonly
+                               style="background-color:#f9fafb;" />
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Vai trò</label>
+                            <select class="form-select" asp-for="EditMember.Role">
+                                <option value="Member">Member</option>
+                                <option value="Leader">Leader</option>
+                                <option value="Treasurer">Treasurer</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Trạng thái</label>
+                            <select class="form-select" asp-for="EditMember.Status">
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                                <option value="Banned">Banned</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <p class="text-muted small mt-3 mb-0">
+                        Thay đổi chỉ áp dụng trong câu lạc bộ này.
+                    </p>
+                </div>
+
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-dark">Lưu lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var modalEl = document.getElementById('editMemberModal');
+            if (!modalEl) return;
+
+            modalEl.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                if (!button) return;
+
+                var memberId = button.getAttribute('data-member-id');
+                var fullName = button.getAttribute('data-member-name') || '';
+                var email = button.getAttribute('data-member-email') || '';
+                var role = button.getAttribute('data-member-role') || 'Member';
+                var status = button.getAttribute('data-member-status') || 'Active';
+
+                document.getElementById('EditMember_MembershipId').value = memberId;
+                document.getElementById('EditMember_Role').value = role;
+                document.getElementById('EditMember_Status').value = status;
+
+                var displayInput = document.getElementById('editMemberDisplayName');
+                displayInput.value = fullName + (email ? ' (' + email + ')' : '');
+            });
+        });
+    </script>
+}

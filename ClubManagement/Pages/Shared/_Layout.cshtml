@@ -37,6 +37,15 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Clubs/Index">Clubs</a>
                         </li>
+                        @if (User.IsInRole("ClubManager"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/ClubManager/Index">
+                                    ClubManagement
+                                </a>
+                            </li>
+                        }
+
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">

@@ -10,5 +10,12 @@ namespace ClubManagement.Repository.Repositories.Interfaces
 {
     public interface IMembershipRepository :IGenericRepository<Membership>
     {
+        Task<(List<Membership> Items, int TotalCount)> GetMembersByClubAsync(
+           int clubId,
+           string? search,
+           string? role,
+           string? status,
+           int pageIndex,
+           int pageSize);
     }
 }

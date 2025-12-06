@@ -12,5 +12,6 @@ namespace ClubManagement.Service.ServiceProviders.Interface
         IAuthService AuthService { get; }
         IClubService ClubService { get; }
         IUserService UserService { get; }
+        IMembershipService MembershipService { get; }
     }
 }

@@ -12,5 +12,6 @@ namespace ClubManagement.Service.Services.Interfaces
         Task<CreateClubRequestDTO> CreateAsync(CreateClubRequestDTO club);
         Task<UpdateClubRequestDTO> UpdateAsync(UpdateClubRequestDTO club);
         Task<ClubResponseDTO> DeleteAsync(int id);
+        Task<List<ClubResponseDTO>> GetClubsForLeaderAsync(string username);
     }
 }

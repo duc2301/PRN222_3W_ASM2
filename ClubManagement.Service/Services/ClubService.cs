@@ -54,5 +54,24 @@ namespace ClubManagement.Service.Services
             await _unitOfWork.SaveChangesAsync();
             return club;
         }
+        public async Task<List<ClubResponseDTO>> GetClubsForLeaderAsync(string username)
+        {
+            // 1. Tìm user theo username
+            var users = await _unitOfWork.UserRepository.GetAllAsync();
+            var leader = users.FirstOrDefault(u => u.Username == username);
+
+            if (leader == null)
+            {
+                return new List<ClubResponseDTO>();
+            }
+
+            // 2. Lọc các CLB có LeaderId = userId
+            var clubs = await _unitOfWork.ClubRepository.GetAllAsync();
+            var managedClubs = clubs
+                .Where(c => c.LeaderId.HasValue && c.LeaderId.Value == leader.UserId)
+                .ToList();
+
+            return _mapper.Map<List<ClubResponseDTO>>(managedClubs);
+        }
     }
 }

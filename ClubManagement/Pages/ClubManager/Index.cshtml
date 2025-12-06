@@ -1,0 +1,124 @@
+﻿@page "/ClubManagement"  
+@model ClubManagement.Pages.ClubManager.IndexModel
+@{
+    ViewData["Title"] = "Danh sách CLB của tôi";
+}
+<div class="my-clubs-wrapper">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="page-title">Danh sách CLB của tôi</h2>
+            <p class="page-subtitle text-muted mb-0">
+                Các câu lạc bộ mà bạn đang quản lý.
+            </p>
+        </div>
+        <div>
+            <a asp-page="/Clubs/Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> Tạo CLB mới
+            </a>
+        </div>
+    </div>
+
+    @if (Model.ManagedClubs == null || !Model.ManagedClubs.Any())
+    {
+        <div class="empty-state text-center py-5">
+            <h5 class="text-muted mb-3">Bạn chưa quản lý câu lạc bộ nào.</h5>
+            <p class="text-secondary mb-4">
+                Hãy tạo một câu lạc bộ mới hoặc được chỉ định làm chủ nhiệm CLB.
+            </p>
+            <a asp-page="/Clubs/Create" class="btn btn-outline-primary">
+                <i class="bi bi-plus-circle me-1"></i> Tạo câu lạc bộ
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var club in Model.ManagedClubs)
+            {
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="club-card shadow-sm h-100">
+                        <div class="club-card-body">
+                            <div class="club-icon mb-3">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <h5 class="club-name">@club.ClubName</h5>
+                            <p class="club-description text-muted">
+                                @(string.IsNullOrWhiteSpace(club.Description)
+                                                        ? "Chưa có mô tả cho câu lạc bộ này."
+                                                        : club.Description)
+                    </p>
+                </div>
+                <div class="club-card-footer d-flex justify-content-between align-items-center">
+                    <div class="text-muted small">
+                        <i class="bi bi-people me-1"></i> Bạn là quản lý
+                    </div>
+                    <a asp-page="/ClubManager/Details"
+                       asp-route-id="@club.ClubId"
+                       class="text-primary fw-semibold text-decoration-none">
+                        Quản lý <i class="bi bi-arrow-right-short"></i>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+                }
+        </div>
+    }
+</div>
+
+<style>
+    .my-clubs-wrapper {
+        padding: 24px 0;
+    }
+
+    .page-title {
+        font-weight: 700;
+    }
+
+    .page-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .club-card {
+        border-radius: 16px;
+        background-color: #ffffff;
+        border: 1px solid #edf2f7;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .club-card-body {
+        padding: 20px 20px 12px;
+    }
+
+    .club-card-footer {
+        padding: 12px 20px 16px;
+        border-top: 1px solid #edf2f7;
+    }
+
+    .club-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(102, 126, 234, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #667eea;
+        font-size: 20px;
+    }
+
+    .club-name {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .club-description {
+        font-size: 14px;
+        min-height: 40px;
+    }
+
+    .empty-state h5 {
+        font-weight: 600;
+    }
+</style>
