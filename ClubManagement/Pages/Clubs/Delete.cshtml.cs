@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using ClubManagement.Service.DTOs.ResponseDTOs;
 using ClubManagement.Service.ServiceProviders.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClubManagement.Pages.Clubs
 {
+    [Authorize(Roles = "Admin")]
     public class DeleteModel : PageModel
     {
         private readonly IServiceProviders _serviceProviders;

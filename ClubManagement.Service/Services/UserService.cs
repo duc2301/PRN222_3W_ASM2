@@ -20,7 +20,11 @@ namespace ClubManagement.Service.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-
+        public async Task<List<UserResponseDTO>> GetLeadersAsync()
+        {
+            var users = await _unitOfWork.UserRepository.GetLeadersAsync();
+            return _mapper.Map<List<UserResponseDTO>>(users);
+        }
         public async Task<List<UserResponseDTO>> GetAllAsync()
         {
             var users = await _unitOfWork.UserRepository.GetAllAsync();
