@@ -17,7 +17,12 @@ namespace ClubManagement.Repository.Repositories
         {
 
         }
-
+        public async Task<List<User>> GetLeadersAsync()
+        {
+            return await _context.Users
+                .Where(u => u.Role == "ClubManager")
+                .ToListAsync();
+        }
         public async Task<User> Login(string username, string password)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username && u.Password == password);

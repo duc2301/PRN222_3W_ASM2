@@ -35,7 +35,19 @@ namespace ClubManagement.Pages.Clubs
                 return NotFound();
             }
             Club = club;
-            ViewData["LeaderId"] = new SelectList(await _serviceProviders.UserService.GetAllAsync(), "UserId", "Email");
+
+            // Only show leader dropdown for non-clubmanagers
+            if (!User.IsInRole("ClubManager"))
+            {
+                var leaders = await _serviceProviders.UserService.GetLeadersAsync();
+                if (!leaders.Any())
+                {
+                    ModelState.AddModelError(string.Empty, "No leaders are available to assign.");
+                    return Page();
+                }
+                ViewData["LeaderId"] = new SelectList(leaders, "UserId", "Email", Club.LeaderId);
+            }
+
             return Page();
         }
 
@@ -46,6 +58,18 @@ namespace ClubManagement.Pages.Clubs
             if (!ModelState.IsValid)
             {
                 return Page();
+            }
+
+            // Prevent clubmanager from changing LeaderId
+            if (User.IsInRole("ClubManager"))
+            {
+                // Reload the original LeaderId from DB
+                var originalClub = await _serviceProviders.ClubService.GetByIdAsync(Club.ClubId);
+                if (originalClub == null)
+                {
+                    return NotFound();
+                }
+                Club.LeaderId = originalClub.LeaderId;
             }
 
             var ClubRequest = _mapper.Map<UpdateClubRequestDTO>(Club);

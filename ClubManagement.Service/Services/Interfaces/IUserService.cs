@@ -10,6 +10,7 @@ namespace ClubManagement.Service.Services.Interfaces
 {
     public interface IUserService
     {
+        Task<List<UserResponseDTO>> GetLeadersAsync();
         Task<List<UserResponseDTO>> GetAllAsync();
     }
 }

@@ -2,12 +2,14 @@
 using ClubManagement.Service.DTOs.RequestDTOs;
 using ClubManagement.Service.DTOs.ResponseDTOs;
 using ClubManagement.Service.ServiceProviders.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ClubManagement.Pages.Clubs
 {
+    [Authorize(Roles = "Admin")]
     public class CreateModel : PageModel
     {
         private readonly IServiceProviders _serviceProviders;
@@ -21,7 +23,14 @@ namespace ClubManagement.Pages.Clubs
 
         public async Task<IActionResult> OnGet()
         {
-            ViewData["LeaderId"] = new SelectList(await _serviceProviders.UserService.GetAllAsync(), "UserId", "Email");
+            var leaders = await _serviceProviders.UserService.GetLeadersAsync();
+            if (!leaders.Any())
+            {
+                ModelState.AddModelError(string.Empty, "No leaders are available to assign.");
+                return Page();
+            }
+
+            ViewData["LeaderId"] = new SelectList(leaders, "UserId", "Email");
             return Page();
         }
 
