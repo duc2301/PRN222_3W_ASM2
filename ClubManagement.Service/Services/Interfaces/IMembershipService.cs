@@ -1,4 +1,5 @@
-﻿using ClubManagement.Service.DTOs.ResponseDTOs;
+﻿using ClubManagement.Service.DTOs.RequestDTOs;
+using ClubManagement.Service.DTOs.ResponseDTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace ClubManagement.Service.Services.Interfaces
 {
     public interface IMembershipService
     {
+        Task UpdateMemberAsync(UpdateMemberRequestDTO request);
+
         Task<PagedResult<ClubMemberResponseDTO>> GetClubMembersAsync(
             int clubId,
             string? search,
@@ -24,3 +27,6 @@ namespace ClubManagement.Service.Services.Interfaces
            string status);
     }
 }
+
+
+    

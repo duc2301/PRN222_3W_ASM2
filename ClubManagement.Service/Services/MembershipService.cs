@@ -1,4 +1,5 @@
 ﻿using ClubManagement.Repository.UnitOfWork.Interface;
+using ClubManagement.Service.DTOs.RequestDTOs;
 using ClubManagement.Service.DTOs.ResponseDTOs;
 using ClubManagement.Service.Services.Interfaces;
 using System;
@@ -16,6 +17,25 @@ namespace ClubManagement.Service.Services
         public MembershipService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+        }
+
+        public async Task UpdateMemberAsync(UpdateMemberRequestDTO request)
+        {
+            // Lấy membership theo (UserId, ClubId)
+            var membership = await _unitOfWork.MembershipRepository
+                                              .GetByUserAndClubAsync(request.UserId, request.ClubId);
+
+            if (membership == null)
+            {
+                // Tuỳ bạn: có thể throw exception, hoặc return false.
+                return;
+            }
+
+            membership.Role = request.Role;
+            membership.Status = request.Status;
+
+            _unitOfWork.MembershipRepository.Update(membership);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<PagedResult<ClubMemberResponseDTO>> GetClubMembersAsync(

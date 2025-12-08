@@ -54,6 +54,42 @@ namespace ClubManagement.Service.Services
             await _unitOfWork.SaveChangesAsync();
             return club;
         }
+
+        public async Task<ClubMembersPageViewModel?> GetMembersPageAsync(
+     int clubId, string? search, string? roleFilter, string? statusFilter, int page, int pageSize)
+        {
+            if (page < 1) page = 1;
+            if (pageSize <= 0) pageSize = 10;
+
+            var club = await _unitOfWork.ClubRepository.GetByIdAsync(clubId);
+            if (club == null) return null;
+
+            var (memberships, totalCount) =
+                await _unitOfWork.MembershipRepository
+                    .GetByClubAsync(clubId, search, roleFilter, statusFilter, page, pageSize);
+
+            var clubDto = _mapper.Map<ClubResponseDTO>(club);
+            var memberDtos = _mapper.Map<List<ClubMemberListItemDTO>>(memberships);
+
+            return new ClubMembersPageViewModel
+            {
+                Club = clubDto,
+                Members = memberDtos,
+                Search = search,
+                RoleFilter = roleFilter,
+                StatusFilter = statusFilter,
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalCount
+            };
+        }
+
+        public async Task<List<ClubResponseDTO>> GetClubsByUsernameAsync(string userName)
+        {
+            var clubs = await _unitOfWork.ClubRepository.GetClubsByUsernameAsync(userName);
+            return _mapper.Map<List<ClubResponseDTO>>(clubs);
+        }
+
         public async Task<List<ClubResponseDTO>> GetClubsForLeaderAsync(string username)
         {
             // 1. Tìm user theo username
