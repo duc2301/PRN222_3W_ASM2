@@ -1,7 +1,8 @@
-using ClubManagement.Service.DTOs.RequestDTOs.Activity;
+using ClubManagement.Service.DTOs.RequestDTOs;
 using ClubManagement.Service.DTOs.ResponseDTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ClubManagement.Service.DTOs.RequestDTOs.Activity;
 
 namespace ClubManagement.Service.Services.Interfaces
 {

@@ -1,4 +1,4 @@
-namespace ClubManagement.Service.DTOs.ResponseDTOs;
+﻿namespace ClubManagement.Service.DTOs.ResponseDTOs;
 
 public class ActivityParticipantResponseDTO
 {

@@ -1,11 +1,12 @@
 using AutoMapper;
 using ClubManagement.Repository.UnitOfWork.Interface;
-using ClubManagement.Service.DTOs.RequestDTOs.Activity;
+using ClubManagement.Service.DTOs.RequestDTOs;
 using ClubManagement.Service.DTOs.ResponseDTOs;
 using ClubManagement.Service.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ClubManagement.Repository.Repositories.Interfaces;
+using ClubManagement.Service.DTOs.RequestDTOs.Activity;
 using Activity = ClubManagement.Repository.Models.Activity;
 
 namespace ClubManagement.Service.Services
@@ -58,13 +59,12 @@ namespace ClubManagement.Service.Services
             {
                 throw new Exception($"Activity with ID {id} not found");
             }
-            
             foreach (var participant in activity.ActivityParticipants.ToList())
             {
                 _unitOfWork.ActivityParticipantRepository.Remove(participant);
             }
-            
             _unitOfWork.ActivityRepository.Remove(activity);
+            
             await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<ActivityResponseDTO>(activity);
         }

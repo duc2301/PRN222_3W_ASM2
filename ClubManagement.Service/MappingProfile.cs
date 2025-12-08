@@ -1,12 +1,12 @@
 ﻿using ClubManagement.Repository.Models;
 using ClubManagement.Service.DTOs.RequestDTOs;
-using ClubManagement.Service.DTOs.RequestDTOs.Activity;
 using ClubManagement.Service.DTOs.ResponseDTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ClubManagement.Service.DTOs.RequestDTOs.Activity;
 
 namespace ClubManagement.Service
 {
@@ -23,6 +23,7 @@ namespace ClubManagement.Service
             
             // User mappings
             CreateMap<User, UserResponseDTO>().ReverseMap();
+            CreateMap<JoinRequest, JoinRequestResponseDTO>();
 
             // Activity mappings
             CreateMap<Activity, ActivityResponseDTO>().ReverseMap();
@@ -32,6 +33,8 @@ namespace ClubManagement.Service
             // ActivityParticipant mappings
             CreateMap<ActivityParticipant, ActivityParticipantResponseDTO>().ReverseMap();
 
+            CreateMap<Payment, PaymentResponseDTO>().ReverseMap();
+
             // Map phức tạp (Khác tên hoặc lấy dữ liệu từ bảng khác)
             //CreateMap<Club, ClubResponseDTO>()
             //    .ForMember(dest => dest.LeaderName, 
@@ -39,6 +42,16 @@ namespace ClubManagement.Service
 
             // Map cho Create/Update (Request DTO)             
             // CreateMap<ClubCreateDTO, Club>();
+
+            CreateMap<Membership, ClubMemberListItemDTO>()
+               .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName))
+               .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+               .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.User.Department));
+
+            // Fee mappings
+            CreateMap<Fee, FeeResponseDTO>()
+                .ForMember(dest => dest.ClubName, opt => opt.MapFrom(src => src.Club != null ? src.Club.ClubName : string.Empty));
+            CreateMap<CreateFeeRequestDTO, Fee>();
         }
     }
 }
