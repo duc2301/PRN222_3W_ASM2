@@ -37,6 +37,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Clubs/Index">Clubs</a>
                         </li>
+                       
                         @if (User.IsInRole("ClubManager"))
                         {
                             <li class="nav-item">
@@ -54,6 +55,9 @@
                                 </a>
                             </li>
                         }
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/JoinRequests/Index">Request</a>
+                        </li>
                     </ul>
 
                     <ul class="navbar-nav ms-auto">

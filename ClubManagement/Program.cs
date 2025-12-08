@@ -52,6 +52,9 @@ builder.Services.AddScoped<IClubService, ClubService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IMembershipService, MembershipService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IJoinRequestService, JoinRequestService>();
+builder.Services.AddScoped<IFeeService, FeeService>();
 
 
 var app = builder.Build();
