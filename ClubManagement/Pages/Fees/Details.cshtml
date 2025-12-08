@@ -1,0 +1,15 @@
+﻿@page "{id:int}"
+@model ClubManagement.Pages.Fees.DetailsModel
+@{
+}
+<h2>Chi tiết khoản phí</h2>
+
+<div>
+    <strong>CLB:</strong> @Model.Fee.ClubName<br />
+    <strong>Tiêu đề:</strong> @Model.Fee.Title<br />
+    <strong>Số tiền:</strong> @Model.Fee.Amount<br />
+    <strong>Hạn nộp:</strong> @Model.Fee.DueDate<br />
+    <strong>Mô tả:</strong> @Model.Fee.Description<br />
+</div>
+
+<a asp-page="Index" class="btn btn-secondary mt-3">Quay lại</a>

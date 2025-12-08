@@ -1,0 +1,117 @@
+﻿@page
+@model ClubManagement.Pages.Payments.ConfirmModel
+@{
+    ViewData["Title"] = "Xác nhận thanh toán";
+}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-check-circle me-2"></i>Xác nhận thanh toán</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Vui lòng kiểm tra kỹ thông tin trước khi xác nhận thanh toán.
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold text-muted">
+                            <i class="bi bi-person me-2"></i>Thành viên:
+                        </div>
+                        <div class="col-md-8">
+                            @Model.Payment.User?.FullName
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold text-muted">
+                            <i class="bi bi-envelope me-2"></i>Email:
+                        </div>
+                        <div class="col-md-8">
+                            @Model.Payment.User?.Email
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold text-muted">
+                            <i class="bi bi-receipt me-2"></i>Tiêu đề phí:
+                        </div>
+                        <div class="col-md-8">
+                            @Model.Payment.Fee?.Title
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold text-muted">
+                            <i class="bi bi-building me-2"></i>Câu lạc bộ:
+                        </div>
+                        <div class="col-md-8">
+                            <span class="badge bg-info text-white">
+                                @Model.Payment.Fee?.Club?.ClubName
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold text-muted">
+                            <i class="bi bi-currency-dollar me-2"></i>Số tiền:
+                        </div>
+                        <div class="col-md-8">
+                            <span class="fw-bold text-success fs-5">
+                                @Model.Payment.Amount.ToString("N0") đ
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4 fw-bold text-muted">
+                            <i class="bi bi-info-circle me-2"></i>Trạng thái hiện tại:
+                        </div>
+                        <div class="col-md-8">
+                            @if (Model.Payment.Status == "Paid")
+                            {
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>Đã xác nhận
+                                </span>
+                            }
+                            else if (Model.Payment.Status == "Pending")
+                            {
+                                <span class="badge bg-info text-white">
+                                    <i class="bi bi-hourglass-split me-1"></i>Đã đóng, chờ xác nhận
+                                </span>
+                            }
+                            else if (Model.Payment.Status == "Unpaid")
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-clock me-1"></i>Chưa đóng
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@Model.Payment.Status</span>
+                            }
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <form method="post">
+                        <input type="hidden" name="id" value="@Model.Payment.PaymentId" />
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg"
+                                    onclick="return confirm('Bạn có chắc chắn muốn xác nhận thanh toán này?');">
+                                <i class="bi bi-check-circle me-2"></i>Xác nhận đã thanh toán
+                            </button>
+                            <a asp-page="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Quay lại danh sách
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

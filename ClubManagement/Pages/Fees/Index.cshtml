@@ -1,0 +1,33 @@
+﻿@page
+@model ClubManagement.Pages.Fees.IndexModel
+@{
+    ViewData ["Title"]="Quản lý Phí";
+
+}
+<h2>Danh sách phí</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>CLB</th>
+            <th>Tiêu đề</th>
+            <th>Số tiền</th>
+            <th>Hạn nộp</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var fee in Model.Fees)
+        {
+            <tr>
+                <td>@fee.ClubName</td>
+                <td>@fee.Title</td>
+                <td>@fee.Amount</td>
+                <td>@fee.DueDate</td>
+                <td>
+                    <a asp-page="Details" asp-route-id="@fee.FeeId" class="btn btn-info">Chi tiết</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

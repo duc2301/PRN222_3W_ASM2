@@ -1,0 +1,40 @@
+﻿@page
+@model ClubManagement.Pages.Fees.CreateModel
+@{
+    ViewData["Title"] = "Tạo khoản phí";
+}
+<h2>Tạo khoản phí</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label>CLB</label>
+        <input asp-for="Fee.ClubId" class="form-control" />
+        <span asp-validation-for="Fee.ClubId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Tiêu đề</label>
+        <input asp-for="Fee.Title" class="form-control" />
+        <span asp-validation-for="Fee.Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Số tiền</label>
+        <input asp-for="Fee.Amount" class="form-control" />
+        <span asp-validation-for="Fee.Amount" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Hạn nộp</label>
+        <input asp-for="Fee.DueDate" class="form-control" type="date" />
+        <span asp-validation-for="Fee.DueDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Mô tả</label>
+        <textarea asp-for="Fee.Description" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Tạo</button>
+    <a asp-page="Index" class="btn btn-secondary mt-2">Quay lại</a>
+</form>

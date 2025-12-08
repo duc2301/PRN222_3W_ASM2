@@ -55,7 +55,12 @@ builder.Services.AddScoped<IMembershipService, MembershipService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IJoinRequestService, JoinRequestService>();
 builder.Services.AddScoped<IFeeService, FeeService>();
-
+builder.Services.AddRazorPages()
+    .AddRazorPagesOptions(options =>
+    {
+        options.Conventions.AuthorizePage("/Payments/MyPayments");
+        options.Conventions.AuthorizeFolder("/Payments");
+    });
 
 var app = builder.Build();
 
