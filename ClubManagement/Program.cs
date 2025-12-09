@@ -47,6 +47,8 @@ builder.Services.AddScoped<IJoinRequestRepository, JoinRequestRepository>();
 builder.Services.AddScoped<IClubRepository, ClubRepository>();
 builder.Services.AddScoped<IActivityParticipantRepository, ActivityParticipantRepository>();
 builder.Services.AddScoped<IFeeRepository, FeeRepository>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IClubService, ClubService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -55,6 +57,7 @@ builder.Services.AddScoped<IMembershipService, MembershipService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IJoinRequestService, JoinRequestService>();
 builder.Services.AddScoped<IFeeService, FeeService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddRazorPages()
     .AddRazorPagesOptions(options =>
     {
