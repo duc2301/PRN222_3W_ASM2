@@ -71,9 +71,13 @@ namespace ClubManagement.Pages.Auth
             {
                 return RedirectToPage("/Index");
             }
-            else
+            else if(user.Role == "Admin")
             {
                 return RedirectToPage("/Clubs/MyClubs");
+            }
+            else
+            {
+                return RedirectToPage("/ClubManager/Index");
             }
         }
     }

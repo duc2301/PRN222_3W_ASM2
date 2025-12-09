@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace ClubManagement.Pages.Clubs
 {
-    [Authorize(Roles = "Admin,ClubManager")]
+    [Authorize(Roles = "Admin,ClubManager,Student")]
     public class IndexModel : PageModel
     {
         private readonly IServiceProviders _serviceProviders;
