@@ -2,42 +2,61 @@
 @model ClubManagement.Pages.Clubs.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết CLB";
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>Club</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Club.ClubName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Club.ClubName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Club.Description)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Club.Description)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Club.CreatedAt)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Club.CreatedAt)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Club.Leader)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Club.Leader.Email)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.Club.ClubId">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Chi tiết CLB</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Tên CLB</dt>
+                        <dd class="col-sm-8">@Model.Club.ClubName</dd>
+                        <dt class="col-sm-4">Mô tả</dt>
+                        <dd class="col-sm-8">@Model.Club.Description</dd>
+                        <dt class="col-sm-4">Ngày thành lập</dt>
+                        <dd class="col-sm-8">@Model.Club.CreatedAt?.ToString("dd/MM/yyyy")</dd>
+                        <dt class="col-sm-4">Chủ nhiệm</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.Club.Leader != null)
+                            {
+                                <span>@Model.Club.Leader.FullName</span>
+                                @if (!string.IsNullOrEmpty(Model.Club.Leader.Email))
+                                {
+                                    <span class="text-muted" style="font-size: 13px;">(@Model.Club.Leader.Email)</span>
+                                }
+                            }
+                            else
+                            {
+                                <span>N/A</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+                <div class="card-footer bg-white border-0 d-flex justify-content-between">
+                    <a asp-page="MyClubs" class="btn btn-outline-secondary">Quay lại</a>
+                    <div>
+                        <a asp-page="./Edit" asp-route-id="@Model.Club.ClubId" class="btn btn-primary me-2">Chỉnh sửa</a>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <form method="post"
+                                  asp-page-handler="Delete"
+                                  asp-route-id="@Model.Club.ClubId"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa câu lạc bộ này? Hành động này không thể hoàn tác.');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-trash me-1"></i> Xóa
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

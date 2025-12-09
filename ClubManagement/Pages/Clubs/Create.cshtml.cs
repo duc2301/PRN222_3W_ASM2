@@ -21,35 +21,41 @@ namespace ClubManagement.Pages.Clubs
             _mapper = mapper;
         }
 
+        [BindProperty]
+        public ClubResponseDTO Club { get; set; } = default!;
+
+        public SelectList LeaderList { get; set; } = default!;
+
         public async Task<IActionResult> OnGet()
         {
             var leaders = await _serviceProviders.UserService.GetLeadersAsync();
             if (!leaders.Any())
             {
                 ModelState.AddModelError(string.Empty, "No leaders are available to assign.");
-                return Page();
             }
-
             ViewData["LeaderId"] = new SelectList(leaders, "UserId", "Email");
             return Page();
         }
 
-        [BindProperty]
-        public ClubResponseDTO Club { get; set; } = default!;
-
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            var allClubs = await _serviceProviders.ClubService.GetAllAsync();
+            if (allClubs.Any(c => c.ClubName.Trim().ToLower() == Club.ClubName.Trim().ToLower()))
+            {
+                ModelState.AddModelError("Club.ClubName", "Tên câu lạc bộ đã tồn tại.");
+            }
+
             if (!ModelState.IsValid)
             {
+                var leaders = await _serviceProviders.UserService.GetLeadersAsync();
+                ViewData["LeaderId"] = new SelectList(leaders, "UserId", "Email", Club.LeaderId);
                 return Page();
             }
 
             var clubRequest = _mapper.Map<CreateClubRequestDTO>(Club);
-
             await _serviceProviders.ClubService.CreateAsync(clubRequest);
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./MyClubs");
         }
     }
 }

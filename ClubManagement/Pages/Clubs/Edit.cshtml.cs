@@ -24,11 +24,6 @@ namespace ClubManagement.Pages.Clubs
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var club = await _serviceProviders.ClubService.GetByIdAsync(id);
             if (club == null)
             {
@@ -36,7 +31,6 @@ namespace ClubManagement.Pages.Clubs
             }
             Club = club;
 
-            // Only show leader dropdown for non-clubmanagers
             if (!User.IsInRole("ClubManager"))
             {
                 var leaders = await _serviceProviders.UserService.GetLeadersAsync();
@@ -47,23 +41,19 @@ namespace ClubManagement.Pages.Clubs
                 }
                 ViewData["LeaderId"] = new SelectList(leaders, "UserId", "Email", Club.LeaderId);
             }
-
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            var allClubs = await _serviceProviders.ClubService.GetAllAsync();
+            if (allClubs.Any(c => c.ClubId != Club.ClubId && c.ClubName.Trim().ToLower() == Club.ClubName.Trim().ToLower()))
             {
-                return Page();
+                ModelState.AddModelError("Club.ClubName", "Tên câu lạc bộ đã tồn tại.");
             }
 
-            // Prevent clubmanager from changing LeaderId
             if (User.IsInRole("ClubManager"))
             {
-                // Reload the original LeaderId from DB
                 var originalClub = await _serviceProviders.ClubService.GetByIdAsync(Club.ClubId);
                 if (originalClub == null)
                 {
@@ -72,15 +62,20 @@ namespace ClubManagement.Pages.Clubs
                 Club.LeaderId = originalClub.LeaderId;
             }
 
+            if (!ModelState.IsValid)
+            {
+                if (!User.IsInRole("ClubManager"))
+                {
+                    var leaders = await _serviceProviders.UserService.GetLeadersAsync();
+                    ViewData["LeaderId"] = new SelectList(leaders, "UserId", "Email", Club.LeaderId);
+                }
+                return Page();
+            }
+
             var ClubRequest = _mapper.Map<UpdateClubRequestDTO>(Club);
             await _serviceProviders.ClubService.UpdateAsync(ClubRequest);
 
-            return RedirectToPage("./Index");
-        }
-
-        private async Task<bool> ClubExists(int id)
-        {
-            return await _serviceProviders.ClubService.GetByIdAsync(id) != null;
+            return RedirectToPage("./MyClubs");
         }
     }
 }
