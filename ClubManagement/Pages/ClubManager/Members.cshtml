@@ -183,9 +183,7 @@
     </div>
 
     <div class="club-header-actions d-flex gap-2">
-        <button type="button" class="btn btn-config">
-            <i class="bi bi-gear-fill me-1"></i> Cấu hình
-        </button>
+        <a asp-page="/Clubs/Edit" asp-route-id="@Model.Club.ClubId" class="btn btn-primary me-2">Chỉnh sửa</a>
     </div>
 </div>
 

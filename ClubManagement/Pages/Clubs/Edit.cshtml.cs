@@ -2,12 +2,14 @@
 using ClubManagement.Service.DTOs.RequestDTOs;
 using ClubManagement.Service.DTOs.ResponseDTOs;
 using ClubManagement.Service.ServiceProviders.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ClubManagement.Pages.Clubs
 {
+    [Authorize(Roles = "Admin,ClubManager")]
     public class EditModel : PageModel
     {
         private readonly IServiceProviders _serviceProviders;
@@ -74,8 +76,14 @@ namespace ClubManagement.Pages.Clubs
 
             var ClubRequest = _mapper.Map<UpdateClubRequestDTO>(Club);
             await _serviceProviders.ClubService.UpdateAsync(ClubRequest);
-
-            return RedirectToPage("./MyClubs");
+            if (User.IsInRole("ClubManager"))
+            {
+                return RedirectToPage("/ClubManager/Index");
+            }
+            else
+            {
+                return RedirectToPage("/Clubs/MyClubs");
+            }
         }
     }
 }

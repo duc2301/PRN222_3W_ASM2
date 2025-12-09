@@ -38,9 +38,19 @@
                     </dl>
                 </div>
                 <div class="card-footer bg-white border-0 d-flex justify-content-between">
-                    <a asp-page="MyClubs" class="btn btn-outline-secondary">Quay lại</a>
+                    @if (User.IsInRole("Student"))
+                    {
+                        <a asp-page="Index" class="btn btn-outline-secondary">Quay lại</a>
+                    }
+                    else
+                    {
+                        <a asp-page="MyClubs" class="btn btn-outline-secondary">Quay lại</a>
+                    }
                     <div>
-                        <a asp-page="./Edit" asp-route-id="@Model.Club.ClubId" class="btn btn-primary me-2">Chỉnh sửa</a>
+                        @if (!User.IsInRole("Student"))
+                        {
+                            <a asp-page="./Edit" asp-route-id="@Model.Club.ClubId" class="btn btn-primary me-2">Chỉnh sửa</a>
+                        }
                         @if (User.IsInRole("Admin"))
                         {
                             <form method="post"

@@ -1,54 +1,88 @@
 ﻿@page
 @model ClubManagement.Pages.Clubs.IndexModel
+@using Microsoft.AspNetCore.Identity
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách CLB";
 }
 
-<h1>Index</h1>
+@if (User.IsInRole("Student"))
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h5 fw-semibold mb-1">Danh sách CLB</h2>
+            <p class="text-muted mb-0" style="font-size: 14px;">
+                Xem các câu lạc bộ hiện có trong hệ thống.
+            </p>
+        </div>
+    </div>
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Club[0].ClubName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Club[0].Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Club[0].CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Club[0].Leader)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Club) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ClubName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Leader.Email)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.ClubId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ClubId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ClubId">Delete</a>
-            </td>
-        </tr>
+    @if (!Model.Club.Any())
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+            <div class="fw-semibold mb-1">Hiện chưa có câu lạc bộ nào</div>
+            <div>Vui lòng quay lại sau.</div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var club in Model.Club)
+            {
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="rounded-3 d-inline-flex align-items-center justify-content-center me-3"
+                                     style="width:40px; height:40px; background:#eef2ff;">
+                                    <i class="bi bi-people-fill text-primary"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">@club.ClubName</h5>
+                                    @if (!string.IsNullOrWhiteSpace(club.Description))
+                                    {
+                                        <p class="text-muted small mb-0">
+                                            @club.Description
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted small mb-0">
+                                            Nơi sinh viên cùng sinh hoạt và phát triển kỹ năng.
+                                        </p>
+                                    }
+                                    <div class="mb-2 small text-muted">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        <span>Ngày thành lập: @(club.CreatedAt?.ToString("dd/MM/yyyy") ?? "N/A")</span>
+                                    </div>
+                                    <div class="mb-2 small text-muted">
+                                        <i class="bi bi-person-fill me-1"></i>
+                                        <span>Chủ nhiệm: @(club.Leader?.FullName ?? "N/A")</span>
+                                        @if (!string.IsNullOrEmpty(club.Leader?.Email))
+                                        {
+                                            <span class="text-muted" style="font-size: 13px;">(@club.Leader.Email)</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0 d-flex justify-content-end align-items-center">
+                            <a asp-page="Details"
+                               asp-route-id="@club.ClubId"
+                               class="text-primary fw-semibold small text-decoration-none">
+                                Xem chi tiết <i class="bi bi-arrow-right-short"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 }
-    </tbody>
-</table>
+else
+{
+    <div class="alert alert-warning mt-4">
+        Bạn không có quyền truy cập trang này.
+    </div>
+}

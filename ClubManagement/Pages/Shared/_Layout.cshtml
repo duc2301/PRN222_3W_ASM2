@@ -35,10 +35,20 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                         </li>
+                        @if (User.IsInRole("Student"))
+                        {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Clubs/Index">Clubs</a>
                         </li>
-                       
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Clubs/MyClubs">
+                                    ClubAdmin
+                                </a>
+                            </li>
+                        }
                         @if (User.IsInRole("ClubManager"))
                         {
                             <li class="nav-item">
