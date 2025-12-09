@@ -1,40 +1,86 @@
-﻿@page
+﻿
+@page
 @model ClubManagement.Pages.Fees.CreateModel
 @{
-    ViewData["Title"] = "Tạo khoản phí";
+    ViewData["Title"] = "Tạo Phí Mới";
 }
-<h2>Tạo khoản phí</h2>
 
-<form method="post">
-    <div class="form-group">
-        <label>CLB</label>
-        <input asp-for="Fee.ClubId" class="form-control" />
-        <span asp-validation-for="Fee.ClubId" class="text-danger"></span>
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary"><i class="bi bi-plus-circle me-2"></i>Tạo Phí Mới</h2>
+            <p class="text-muted mb-0">Tạo khoản phí mới cho câu lạc bộ. Phí sẽ tự động được phân bổ cho tất cả thành viên.</p>
+        </div>
+        <a asp-page="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
     </div>
 
-    <div class="form-group">
-        <label>Tiêu đề</label>
-        <input asp-for="Fee.Title" class="form-control" />
-        <span asp-validation-for="Fee.Title" class="text-danger"></span>
-    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Thông tin Phí</h5>
+                </div>
+                <div class="card-body p-4">
 
-    <div class="form-group">
-        <label>Số tiền</label>
-        <input asp-for="Fee.Amount" class="form-control" />
-        <span asp-validation-for="Fee.Amount" class="text-danger"></span>
-    </div>
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-    <div class="form-group">
-        <label>Hạn nộp</label>
-        <input asp-for="Fee.DueDate" class="form-control" type="date" />
-        <span asp-validation-for="Fee.DueDate" class="text-danger"></span>
-    </div>
+                        <div class="mb-4">
+                            <label asp-for="Fee.ClubId" class="form-label fw-bold">Câu lạc bộ *</label>
+                            <select asp-for="Fee.ClubId" class="form-select form-control-lg" asp-items="Model.ClubList">
+                                <option value="">-- Chọn câu lạc bộ --</option>
+                            </select>
+                            <span asp-validation-for="Fee.ClubId" class="text-danger"></span>
+                        </div>
 
-    <div class="form-group">
-        <label>Mô tả</label>
-        <textarea asp-for="Fee.Description" class="form-control"></textarea>
-    </div>
+                        <div class="mb-4">
+                            <label asp-for="Fee.Title" class="form-label fw-bold">Tiêu đề *</label>
+                            <input asp-for="Fee.Title" class="form-control form-control-lg" />
+                            <span asp-validation-for="Fee.Title" class="text-danger"></span>
+                        </div>
 
-    <button type="submit" class="btn btn-primary mt-2">Tạo</button>
-    <a asp-page="Index" class="btn btn-secondary mt-2">Quay lại</a>
-</form>
+                        <div class="mb-4">
+                            <label asp-for="Fee.Amount" class="form-label fw-bold">Tổng số tiền (VNĐ) *</label>
+                            <input asp-for="Fee.Amount" class="form-control form-control-lg" type="number" min="1000" step="1000" />
+                            <span asp-validation-for="Fee.Amount" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Fee.DueDate" class="form-label fw-bold">Hạn nộp *</label>
+                            <input asp-for="Fee.DueDate" class="form-control form-control-lg" type="date"
+                                   min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
+                            <span asp-validation-for="Fee.DueDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Fee.Description" class="form-label fw-bold">Mô tả</label>
+                            <textarea asp-for="Fee.Description" class="form-control" rows="4"></textarea>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Phí sẽ tự động phân bổ cho tất cả thành viên đang hoạt động.
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle me-1"></i> Tạo Phí
+                            </button>
+                            <a asp-page="Index" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-x-circle me-1"></i> Hủy
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -47,5 +47,13 @@ namespace ClubManagement.Repository.Repositories
 
             return availableFees;
         }
+        public async Task<Fee> GetFeeWithPaymentsAsync(int feeId)
+        {
+            return await _context.Fees
+                .Include(f => f.Club)
+                .Include(f => f.Payments)
+                    .ThenInclude(p => p.User)
+                .FirstOrDefaultAsync(f => f.FeeId == feeId);
+        }
     }
 }

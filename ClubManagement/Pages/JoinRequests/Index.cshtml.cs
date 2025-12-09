@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using ClubManagement.Repository.Models;
 using ClubManagement.Service.ServiceProviders.Interface;
 using Microsoft.AspNetCore.Mvc;
@@ -17,18 +17,26 @@ namespace ClubManagement.Pages.JoinRequests
             _mapper = mapper;
         }
 
-        public IEnumerable<JoinRequest> Requests { get; set; }
+       public IEnumerable<JoinRequest> Requests { get; set; } = new List<JoinRequest>();
+    
+    [TempData]
+    public string? SuccessMessage { get; set; }
+    
+    [TempData]
+    public string? ErrorMessage { get; set; }
 
-        [TempData]
-        public string SuccessMessage { get; set; }
-
-        [TempData]
-        public string ErrorMessage { get; set; }
-
-        public async Task OnGetAsync()
+    public async Task OnGetAsync()
+    {
+        try
         {
-            Requests = await _serviceProviders.JoinRequestService.GetAllAsync();
+                Requests = await _serviceProviders.JoinRequestService.GetAllAsync();
+            }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi khi tải dữ liệu: {ex.Message}";
+            Requests = new List<JoinRequest>();
         }
+    }
     }
 }
 

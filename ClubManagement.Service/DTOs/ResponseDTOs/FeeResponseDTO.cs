@@ -1,3 +1,4 @@
+using ClubManagement.Repository.Models;
 using System;
 
 namespace ClubManagement.Service.DTOs.ResponseDTOs
@@ -12,6 +13,7 @@ namespace ClubManagement.Service.DTOs.ResponseDTOs
         public DateOnly DueDate { get; set; }
         public string? Description { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public IEnumerable<Payment> Payments { get; set; } = new List<Payment>();
     }
 }
 

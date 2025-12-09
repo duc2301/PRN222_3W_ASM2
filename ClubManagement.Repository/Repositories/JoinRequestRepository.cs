@@ -16,9 +16,20 @@ namespace ClubManagement.Repository.Repositories
     {
         public JoinRequestRepository(ClubManagementContext context) : base(context) { }
 
+        // Sửa lại GetAllAsync để include User và Club
+        public new async Task<IEnumerable<JoinRequest>> GetAllAsync()
+        {
+            return await _context.JoinRequests
+                .Include(j => j.User)
+                .Include(j => j.Club)
+                .ToListAsync();
+        }
+
         public async Task<List<JoinRequest>> GetByUserAsync(int userId)
         {
             return await _context.JoinRequests
+                .Include(j => j.User)
+                .Include(j => j.Club)
                 .Where(j => j.UserId == userId)
                 .ToListAsync();
         }
@@ -26,22 +37,28 @@ namespace ClubManagement.Repository.Repositories
         public async Task<List<JoinRequest>> GetByClubAsync(int clubId)
         {
             return await _context.JoinRequests
+                .Include(j => j.User)
+                .Include(j => j.Club)
                 .Where(j => j.ClubId == clubId)
                 .ToListAsync();
         }
+
         public async Task<JoinRequest?> GetByIdAsync(int requestId)
         {
             return await _context.JoinRequests
-                .FirstOrDefaultAsync(j => j.RequestId == requestId); // sửa đúng tên key!
+                .Include(j => j.User)
+                .Include(j => j.Club)
+                .FirstOrDefaultAsync(j => j.RequestId == requestId);
         }
+
         public async Task<JoinRequest?> GetPendingRequestAsync(int userId, int clubId)
         {
             return await _context.JoinRequests
+                .Include(j => j.User)
+                .Include(j => j.Club)
                 .FirstOrDefaultAsync(jr => jr.UserId == userId
                                         && jr.ClubId == clubId
                                         && jr.Status == "Pending");
         }
-
-
     }
 }

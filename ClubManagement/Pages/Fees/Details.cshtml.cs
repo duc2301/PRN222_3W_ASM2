@@ -1,3 +1,4 @@
+using ClubManagement.Repository.Models;
 using ClubManagement.Service.DTOs.ResponseDTOs;
 using ClubManagement.Service.ServiceProviders.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -18,12 +19,13 @@ namespace ClubManagement.Pages.Fees
 
         public FeeResponseDTO Fee { get; set; } = null!;
 
+        public IEnumerable<Payment> Payments
+      => Fee?.Payments ?? Enumerable.Empty<Payment>();
+
         public async Task<IActionResult> OnGetAsync(int id)
         {
             Fee = await _serviceProviders.FeeService.GetByIdAsync(id);
-
-            if (Fee == null)
-                return NotFound();
+            if (Fee == null) return NotFound();
 
             return Page();
         }

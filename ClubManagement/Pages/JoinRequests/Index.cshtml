@@ -38,62 +38,101 @@
                 <table class="table table-hover">
                     <thead class="table-light">
                         <tr>
-                            <th>User ID</th>
-                            <th>Club ID</th>
-                            <th>Status</th>
-                            <th>Request Date</th>
-                            <th>Note</th>
-                            <th class="text-center">Actions</th>
+                            <th>Người dùng</th>
+                            <th>Câu lạc bộ</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày yêu cầu</th>
+                            <th>Ghi chú</th>
+                            <th class="text-center">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var r in Model.Requests)
                         {
                             <tr>
-                                <td>@r.UserId</td>
-                                <td>@r.ClubId</td>
+                                <td>
+                                    <div>
+                                        <strong>@r.User?.FullName</strong>
+                                        <br />
+                                        <small class="text-muted">@r.User?.Email</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>@r.Club?.ClubName</strong>
+                                </td>
                                 <td>
                                     @if (r.Status == "Pending")
                                     {
-                                        <span class="badge bg-warning text-dark">@r.Status</span>
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-clock"></i> Chờ duyệt
+                                        </span>
                                     }
                                     else if (r.Status == "Approved")
                                     {
-                                        <span class="badge bg-success">@r.Status</span>
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> Đã duyệt
+                                        </span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-danger">@r.Status</span>
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle"></i> Đã từ chối
+                                        </span>
                                     }
                                 </td>
-                                <td>@r.RequestDate?.ToString("dd/MM/yyyy")</td>
-                                <td>@r.Note</td>
+                                <td>@r.RequestDate?.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(r.Note))
+                                    {
+                                        <span>@r.Note</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">Không có ghi chú</span>
+                                    }
+                                </td>
                                 <td class="text-center">
                                     @if (r.Status == "Pending")
                                     {
                                         @if (User.IsInRole("Admin") || User.IsInRole("ClubManager"))
                                         {
-                                            <a asp-page="Approve" asp-route-id="@r.RequestId" class="btn btn-success btn-sm">
-                                                <i class="bi bi-check-circle"></i> Approve
-                                            </a>
-                                            <a asp-page="Reject" asp-route-id="@r.RequestId" class="btn btn-danger btn-sm">
-                                                <i class="bi bi-x-circle"></i> Reject
-                                            </a>
+                                            <div class="btn-group" role="group">
+                                                <a asp-page="Approve" asp-route-id="@r.RequestId"
+                                                   class="btn btn-success btn-sm"
+                                                   title="Phê duyệt">
+                                                    <i class="bi bi-check-circle"></i> Duyệt
+                                                </a>
+                                                <a asp-page="Reject" asp-route-id="@r.RequestId"
+                                                   class="btn btn-danger btn-sm"
+                                                   title="Từ chối">
+                                                    <i class="bi bi-x-circle"></i> Từ chối
+                                                </a>
+                                            </div>
                                         }
                                         else
                                         {
-                                            <span class="text-muted">No permission</span>
+                                            <span class="text-muted">
+                                                <i class="bi bi-lock"></i> Không có quyền
+                                            </span>
                                         }
                                     }
                                     else
                                     {
-                                        <span class="text-muted">No actions</span>
+                                        <span class="text-muted fst-italic">Đã xử lý</span>
                                     }
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
+
+                @if (!Model.Requests.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+                        <p class="text-muted mt-3">Chưa có yêu cầu tham gia nào</p>
+                    </div>
+                }
             </div>
         </div>
     </div>

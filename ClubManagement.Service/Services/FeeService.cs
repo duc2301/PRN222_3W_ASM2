@@ -74,10 +74,17 @@ namespace ClubManagement.Service.Services
 
         public async Task<FeeResponseDTO> GetByIdAsync(int feeId)
         {
-            var fee = await _unitOfWork.FeeRepository.GetByIdWithClubAsync(feeId);
+            var fee = await _unitOfWork.FeeRepository.GetFeeWithPaymentsAsync(feeId);
+
             if (fee == null) return null;
-            
-            return _mapper.Map<FeeResponseDTO>(fee);
+
+            // map sang DTO
+            var result = _mapper.Map<FeeResponseDTO>(fee);
+
+            // gán danh sách payment vào ViewBag hoặc DTO
+            result.Payments = fee.Payments;
+
+            return result;
         }
 
         public async Task<IEnumerable<FeeResponseDTO>> GetAllAsync()
@@ -91,6 +98,7 @@ namespace ClubManagement.Service.Services
             var fees = await _unitOfWork.FeeRepository.GetAvailableFeesAsync(userName);
             return _mapper.Map<List<FeeResponseDTO>>(fees);
         }
+
     }
 }
 
