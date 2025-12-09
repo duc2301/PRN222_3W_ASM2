@@ -67,8 +67,14 @@ namespace ClubManagement.Pages.Auth
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
 
-            return RedirectToPage("/Index");
-
+            if (user.Role == "Student")
+            {
+                return RedirectToPage("/Index");
+            }
+            else
+            {
+                return RedirectToPage("/Clubs/MyClubs");
+            }
         }
     }
 }
