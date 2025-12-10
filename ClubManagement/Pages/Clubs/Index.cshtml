@@ -27,56 +27,58 @@
     }
     else
     {
-        <div class="row g-4">
-            @foreach (var club in Model.Club)
-            {
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body">
-                            <div class="d-flex align-items-start mb-3">
-                                <div class="rounded-3 d-inline-flex align-items-center justify-content-center me-3"
-                                     style="width:40px; height:40px; background:#eef2ff;">
-                                    <i class="bi bi-people-fill text-primary"></i>
-                                </div>
-                                <div>
-                                    <h5 class="mb-1">@club.ClubName</h5>
-                                    @if (!string.IsNullOrWhiteSpace(club.Description))
-                                    {
-                                        <p class="text-muted small mb-0">
-                                            @club.Description
-                                        </p>
-                                    }
-                                    else
-                                    {
-                                        <p class="text-muted small mb-0">
-                                            Nơi sinh viên cùng sinh hoạt và phát triển kỹ năng.
-                                        </p>
-                                    }
-                                    <div class="mb-2 small text-muted">
-                                        <i class="bi bi-calendar-event me-1"></i>
-                                        <span>Ngày thành lập: @(club.CreatedAt?.ToString("dd/MM/yyyy") ?? "N/A")</span>
+        <div id="club-list">
+            <div class="row g-4">
+                @foreach (var club in Model.Club)
+                {
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start mb-3">
+                                    <div class="rounded-3 d-inline-flex align-items-center justify-content-center me-3"
+                                         style="width:40px; height:40px; background:#eef2ff;">
+                                        <i class="bi bi-people-fill text-primary"></i>
                                     </div>
-                                    <div class="mb-2 small text-muted">
-                                        <i class="bi bi-person-fill me-1"></i>
-                                        <span>Chủ nhiệm: @(club.Leader?.FullName ?? "N/A")</span>
-                                        @if (!string.IsNullOrEmpty(club.Leader?.Email))
+                                    <div>
+                                        <h5 class="mb-1">@club.ClubName</h5>
+                                        @if (!string.IsNullOrWhiteSpace(club.Description))
                                         {
-                                            <span class="text-muted" style="font-size: 13px;">(@club.Leader.Email)</span>
+                                            <p class="text-muted small mb-0">
+                                                @club.Description
+                                            </p>
                                         }
+                                        else
+                                        {
+                                            <p class="text-muted small mb-0">
+                                                Nơi sinh viên cùng sinh hoạt và phát triển kỹ năng.
+                                            </p>
+                                        }
+                                        <div class="mb-2 small text-muted">
+                                            <i class="bi bi-calendar-event me-1"></i>
+                                            <span>Ngày thành lập: @(club.CreatedAt?.ToString("dd/MM/yyyy") ?? "N/A")</span>
+                                        </div>
+                                        <div class="mb-2 small text-muted">
+                                            <i class="bi bi-person-fill me-1"></i>
+                                            <span>Chủ nhiệm: @(club.Leader?.FullName ?? "N/A")</span>
+                                            @if (!string.IsNullOrEmpty(club.Leader?.Email))
+                                            {
+                                                <span class="text-muted" style="font-size: 13px;">(@club.Leader.Email)</span>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-footer bg-white border-0 d-flex justify-content-end align-items-center">
-                            <a asp-page="Details"
-                               asp-route-id="@club.ClubId"
-                               class="text-primary fw-semibold small text-decoration-none">
-                                Xem chi tiết <i class="bi bi-arrow-right-short"></i>
-                            </a>
+                            <div class="card-footer bg-white border-0 d-flex justify-content-end align-items-center">
+                                <a asp-page="Details"
+                                   asp-route-id="@club.ClubId"
+                                   class="text-primary fw-semibold small text-decoration-none">
+                                    Xem chi tiết <i class="bi bi-arrow-right-short"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
         </div>
     }
 }
@@ -86,3 +88,93 @@ else
         Bạn không có quyền truy cập trang này.
     </div>
 }
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/clubHub")
+            .build();
+
+        connection.on("ClubChanged", function () {
+            fetchClubsAndUpdate();
+        });
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        async function fetchClubsAndUpdate() {
+            const response = await fetch('@Url.Page("Index", "Clubs")');
+            if (!response.ok) return;
+            const clubs = await response.json();
+            renderClubs(clubs);
+        }
+
+        function renderClubs(clubs) {
+            const container = document.getElementById('club-list');
+            const template = document.getElementById('club-card-template');
+            if (!container || !template) return;
+
+            if (!clubs.length) {
+                container.innerHTML = `
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                        <div class="fw-semibold mb-1">Hiện chưa có câu lạc bộ nào</div>
+                        <div>Vui lòng quay lại sau.</div>
+                    </div>`;
+                return;
+            }
+
+            const row = document.createElement('div');
+            row.className = 'row g-4';
+
+            clubs.forEach(club => {
+                const clone = template.content.cloneNode(true);
+                clone.querySelector('h5').textContent = club.clubName;
+                clone.querySelector('.desc').textContent = club.description || 'Nơi sinh viên cùng sinh hoạt và phát triển kỹ năng.';
+                clone.querySelector('.created').textContent = 'Ngày thành lập: ' + (club.createdAt ? new Date(club.createdAt).toLocaleDateString('vi-VN') : 'N/A');
+                clone.querySelector('.leader').textContent = 'Chủ nhiệm: ' + (club.leader?.fullName || 'N/A');
+                clone.querySelector('.leader-email').textContent = club.leader?.email ? `(${club.leader.email})` : '';
+                clone.querySelector('.details-link').href = `/Clubs/Details?id=${club.clubId}`;
+                row.appendChild(clone);
+            });
+
+            container.innerHTML = '';
+            container.appendChild(row);
+        }
+    </script>
+}
+
+<template id="club-card-template">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-start mb-3">
+                    <div class="rounded-3 d-inline-flex align-items-center justify-content-center me-3"
+                         style="width:40px; height:40px; background:#eef2ff;">
+                        <i class="bi bi-people-fill text-primary"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1"></h5>
+                        <p class="text-muted small mb-0 desc"></p>
+                        <div class="mb-2 small text-muted">
+                            <i class="bi bi-calendar-event me-1"></i>
+                            <span class="created"></span>
+                        </div>
+                        <div class="mb-2 small text-muted">
+                            <i class="bi bi-person-fill me-1"></i>
+                            <span class="leader"></span>
+                            <span class="leader-email text-muted" style="font-size: 13px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-0 d-flex justify-content-end align-items-center">
+                <a class="text-primary fw-semibold small text-decoration-none details-link">
+                    Xem chi tiết <i class="bi bi-arrow-right-short"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</template>
