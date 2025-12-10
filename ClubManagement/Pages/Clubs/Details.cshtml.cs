@@ -1,18 +1,22 @@
-﻿using ClubManagement.Service.DTOs.ResponseDTOs;
+﻿using ClubManagement.Hubs;
+using ClubManagement.Service.DTOs.ResponseDTOs;
 using ClubManagement.Service.ServiceProviders.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ClubManagement.Pages.Clubs
 {
     public class DetailsModel : PageModel
     {
         private readonly IServiceProviders _serviceProviders;
+        private readonly IHubContext<ClubHub> _hubContext;
 
-        public DetailsModel(IServiceProviders serviceProviders)
+        public DetailsModel(IServiceProviders serviceProviders, IHubContext<ClubHub> hubContext)
         {
             _serviceProviders = serviceProviders;
+            _hubContext = hubContext;
         }
 
         public ClubResponseDTO Club { get; set; } = default!;
@@ -35,6 +39,8 @@ namespace ClubManagement.Pages.Clubs
             if (club != null)
             {
                 await _serviceProviders.ClubService.DeleteAsync(id);
+                // Notify all clients about the change
+                await _hubContext.Clients.All.SendAsync("ClubChanged");
             }
             return RedirectToPage("MyClubs");
         }
