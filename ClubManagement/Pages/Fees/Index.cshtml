@@ -13,7 +13,7 @@
             <h2 class="fw-bold text-primary"><i class="bi bi-cash-stack me-2"></i>Danh sách Phí</h2>
             <p class="text-muted mb-0">Quản lý các khoản phí của câu lạc bộ.</p>
         </div>
-
+ 
         @* Hiện nút Create cho user có quyền (Admin/ClubManager) *@
         @if (User.IsInRole("Admin") || User.IsInRole("ClubManager"))
         {
@@ -22,7 +22,7 @@
             </a>
         }
     </div>
-
+</div>
 @* Optionally: filter by clubs (Admin) *@
 @if (User.IsInRole("Admin") && ViewBag.Clubs != null)
 {
@@ -44,57 +44,57 @@
         </div>
 }
 
-    <div class="card shadow border-0">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped align-middle mb-0">
-                    <thead class="bg-primary text-white">
+<div class="card shadow border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th class="py-3 ps-4">Tiêu đề</th>
+                        <th class="py-3">Câu lạc bộ</th>
+                        <th class="py-3">Số tiền</th>
+                        <th class="py-3">Hạn nộp</th>
+                        <th class="py-3">Mô tả</th>
+                        <th class="py-3 text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!fees.Any())
+                    {
                         <tr>
-                            <th class="py-3 ps-4">Tiêu đề</th>
-                            <th class="py-3">Câu lạc bộ</th>
-                            <th class="py-3">Số tiền</th>
-                            <th class="py-3">Hạn nộp</th>
-                            <th class="py-3">Mô tả</th>
-                            <th class="py-3 text-end pe-4">Thao tác</th>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                Chưa có phí nào. Hãy tạo mới!
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @if (!fees.Any())
+                    }
+                    else
+                    {
+                        @foreach (var item in fees)
                         {
                             <tr>
-                                <td colspan="6" class="text-center py-5 text-muted">
-                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                                    Chưa có phí nào. Hãy tạo mới!
+                                <td class="ps-4 fw-bold text-dark">@item.Title</td>
+                                <td><span class="badge bg-info text-white">@item.ClubName</span></td>
+                                <td><span class="fw-bold text-success">@item.Amount.ToString("N0") đ</span></td>
+                                <td><span class="badge bg-light text-dark border"><i class="bi bi-calendar-event me-1"></i>@item.DueDate.ToString("dd/MM/yyyy")</span></td>
+                                <td>
+                                    <span class="text-muted" title="@item.Description">
+                                        @(item.Description?.Length > 50 ? item.Description.Substring(0, 50) + "..." : item.Description ?? "Không có mô tả")
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group" role="group">
+                                        <a asp-page="Details" asp-route-id="@item.FeeId" class="btn btn-sm btn-outline-info" title="Chi tiết">
+                                            <i class="bi bi-info-circle"></i> Chi tiết
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         }
-                        else
-                        {
-                            @foreach (var item in fees)
-                            {
-                                <tr>
-                                    <td class="ps-4 fw-bold text-dark">@item.Title</td>
-                                    <td><span class="badge bg-info text-white">@item.ClubName</span></td>
-                                    <td><span class="fw-bold text-success">@item.Amount.ToString("N0") đ</span></td>
-                                    <td><span class="badge bg-light text-dark border"><i class="bi bi-calendar-event me-1"></i>@item.DueDate.ToString("dd/MM/yyyy")</span></td>
-                                    <td>
-                                        <span class="text-muted" title="@item.Description">
-                                            @(item.Description?.Length > 50 ? item.Description.Substring(0, 50) + "..." : item.Description ?? "Không có mô tả")
-                                        </span>
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <div class="btn-group" role="group">
-                                            <a asp-page="Details" asp-route-id="@item.FeeId" class="btn btn-sm btn-outline-info" title="Chi tiết">
-                                                <i class="bi bi-info-circle"></i> Chi tiết
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
         </div>
-
+    </div>
+</div>
 @* Pagination block (nếu cần) *@
