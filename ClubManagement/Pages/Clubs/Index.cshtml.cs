@@ -2,8 +2,10 @@
 using ClubManagement.Service.DTOs.ResponseDTOs;
 using ClubManagement.Service.ServiceProviders.Interface;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace ClubManagement.Pages.Clubs
 {
@@ -34,6 +36,13 @@ namespace ClubManagement.Pages.Clubs
                     .OrderBy(c => c.ClubName)
                     .ToList();
             }
+        }
+
+        public async Task<IActionResult> OnGetClubsAsync()
+        { 
+            var clubs = await _serviceProviders.ClubService.GetAllAsync();
+            var clubDtos = _mapper.Map<List<ClubResponseDTO>>(clubs);
+            return new JsonResult(clubDtos);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ClubManagement.Hubs;
 using ClubManagement.Service.DTOs.RequestDTOs;
 using ClubManagement.Service.DTOs.ResponseDTOs;
 using ClubManagement.Service.ServiceProviders.Interface;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ClubManagement.Pages.Clubs
 {
@@ -14,11 +16,13 @@ namespace ClubManagement.Pages.Clubs
     {
         private readonly IServiceProviders _serviceProviders;
         private readonly IMapper _mapper;
+        private readonly IHubContext<ClubHub> _hubContext;
 
-        public CreateModel(IServiceProviders serviceProviders, IMapper mapper)
+        public CreateModel(IServiceProviders serviceProviders, IMapper mapper, IHubContext<ClubHub> hubContext)
         {
             _serviceProviders = serviceProviders;
             _mapper = mapper;
+            _hubContext = hubContext;
         }
 
         [BindProperty]
@@ -54,6 +58,9 @@ namespace ClubManagement.Pages.Clubs
 
             var clubRequest = _mapper.Map<CreateClubRequestDTO>(Club);
             await _serviceProviders.ClubService.CreateAsync(clubRequest);
+
+            // Notify all clients
+            await _hubContext.Clients.All.SendAsync("ClubChanged");
 
             return RedirectToPage("./MyClubs");
         }

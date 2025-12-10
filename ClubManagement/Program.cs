@@ -1,3 +1,4 @@
+using ClubManagement.Hubs;
 using ClubManagement.Repository.Basic;
 using ClubManagement.Repository.Basic.Interfaces;
 using ClubManagement.Repository.DbContexts;
@@ -16,7 +17,11 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -58,6 +63,7 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IJoinRequestService, JoinRequestService>();
 builder.Services.AddScoped<IFeeService, FeeService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddSignalR();
 builder.Services.AddRazorPages()
     .AddRazorPagesOptions(options =>
     {
@@ -85,5 +91,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.MapHub<ClubHub>("/clubHub");
 
 app.Run();
